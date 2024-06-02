@@ -31,7 +31,12 @@ export class DeleteBtnComponent {
   fg = input<FormGroup>();
 
   submit() {
-    console.log(this.fg()?.value);
+    const form = this.fg();
+    if (form?.valid) {
+      console.log(this.fg()?.value);
+    } else {
+      form?.markAllAsTouched();
+    }
   }
 
   action() {}
