@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { EditUserState, Role } from '../../componnts/user/user.models';
 
 export const attemptToBlockUser = createAction(
   '[User] Attempt to block user',
@@ -16,4 +17,14 @@ export const deleteUser = createAction(
 export const setPassword = createAction(
   '[User] Set password',
   props<{ id: string }>()
+);
+
+export const submitUserRole = createAction(
+  '[User] Submit user role',
+  props<{ role: Role }>()
+);
+
+export const submtiEditUserState = createAction(
+  '[User Edit] Submit edit user state',
+  props<EditUserState>()
 );

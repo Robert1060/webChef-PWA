@@ -1,6 +1,8 @@
 import { Component, HostBinding, input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { Action, Store } from '@ngrx/store';
+import { EditUserState } from '../user/user.models';
+import { submtiEditUserState } from '../../store/user/user.actions';
 
 @Component({
   selector: 'app-custom-btn',
@@ -34,7 +36,17 @@ export class DeleteBtnComponent {
   fg = input<FormGroup>();
 
   submit() {
-    console.log(this.fg()?.value);
+    const form = this.fg();
+    if (form?.valid && this.isUserState(form.value)) {
+      this.store.dispatch(submtiEditUserState(form.value));
+    } else {
+      form?.markAllAsTouched();
+    }
+  }
+
+  isUserState(data: any): data is EditUserState {
+    // that's just ugly type check, to chage in future
+    return data.firstName && data.lastName;
   }
 
   dispatchAction(action?: Action) {

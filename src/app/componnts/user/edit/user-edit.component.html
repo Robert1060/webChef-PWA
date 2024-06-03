@@ -1,0 +1,166 @@
+<div class="m-4 p-4 w-full">
+  <div class="flex justify-between items-center">
+    <div class="flex flex-col gap-2">
+      <div class="capitalize">user / {{ routeUrl() }}</div>
+      <h1 class="text-purple">{{ userName() }}</h1>
+    </div>
+    <div class="flex gap-4">
+      @for(btn of customButtonsInternal; track $index) { @switch (btn.type) {
+      @case ('action') {
+      <app-custom-btn
+        [color]="btn.color"
+        [btnName]="btn.name"
+        [actionToDispatch]="btn.action('')"
+      ></app-custom-btn>
+      } @case ('submit') {
+      <app-custom-btn
+        [color]="btn.color"
+        [btnName]="btn.name"
+        [fg]="linksFormGroup"
+      ></app-custom-btn>
+      } } }
+    </div>
+  </div>
+  <div class="flex w-full gap-4 mt-4" style="height: calc(100% - 80px)">
+    <mat-tab-group
+      class="w-3/5 border"
+      mat-stretch-tabs="false"
+      mat-align-tabs="start"
+    >
+      <mat-tab label="Permissions">
+        <div class="flex justify-between p-6">
+          <div>
+            <h1>
+              Role: <span class="text-blue">{{ userRole() }}</span>
+            </h1>
+          </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label>Assign role</mat-label>
+              <mat-select
+                (ngModelChange)="handleUserRole($event)"
+                [ngModel]="userRole()"
+              >
+                <mat-select-trigger>
+                  {{ userRole() || "" }}
+                </mat-select-trigger>
+                @for (role of rolesList; track $index) {
+                <mat-option [value]="role">{{ role }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Logs">
+        <div class="p-4">logs content goes here</div>
+      </mat-tab>
+    </mat-tab-group>
+    <mat-tab-group
+      class="w-2/5 border"
+      mat-stretch-tabs="false"
+      mat-align-tabs="start"
+    >
+      <mat-tab label="Links">
+        <div [formGroup]="linksFormGroup" class="flex flex-col p-6">
+          <div>
+            <h1 class="text-purple">Links</h1>
+            <mat-divider></mat-divider>
+            <div class="flex pt-4 gap-6">
+              <div class="w-1/2">
+                <mat-form-field appearance="outline" class="width-fill">
+                  <mat-label>First Name</mat-label>
+                  <input formControlName="firstName" type="text" matInput />
+                  <mat-error>First name is required</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="width-fill">
+                  <mat-label>Last Name</mat-label>
+                  <input formControlName="lastName" type="text" matInput />
+                  <mat-error>Last name is required</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="width-fill">
+                  <mat-label>Birth Date</mat-label>
+                  <input
+                    formControlName="birthDate"
+                    matInput
+                    [matDatepicker]="picker"
+                  />
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker touchUi #picker></mat-datepicker>
+                  <mat-error>Birth date is required</mat-error>
+                </mat-form-field>
+              </div>
+              <div class="w-1/2 pr-4">
+                <div
+                  (click)="fileDropRef.click()"
+                  appDnd
+                  (fileDropped)="onFileDrop($event)"
+                  class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill"
+                >
+                  <input
+                    type="file"
+                    #fileDropRef
+                    (change)="handleFileBrowse($event)"
+                    id="fileDropRef"
+                    multiple
+                    class="hidden"
+                  />
+                  <mat-icon color="primary">upload</mat-icon>
+                  <label class="rounded-lg text-blue"
+                    >Drag and Drop file here</label
+                  >
+                  <p class="text-sm gray-text text-center">
+                    Drag and drop filesor select from your files
+                  </p>
+                  @if(getFilesControls; as files) { @for(file of files; track
+                  $index) {
+                  <div
+                    class="border relative flex justify-between items-center width-fill"
+                  >
+                    <span>{{ file.name }}</span>
+                    <button
+                      mat-icon-button
+                      class="scale-75"
+                      (click)="deleteFile($event, $index)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+
+                  } }
+                </div>
+                <mat-form-field appearance="outline" class="width-fill pt-4">
+                  <mat-label>Select Citizenship(s)</mat-label>
+                  <mat-select formControlName="citizienShip" required multiple>
+                    @for (option of citizenshipOptions; track $index) {
+                    <mat-option [value]="option.id">
+                      {{ option.name }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                  <mat-error>Citizienship is required</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-purple">Contact information</h1>
+            <mat-divider></mat-divider>
+            <div class="gap-2">
+              @for(media of socialMedia; track $index) {
+              <mat-form-field appearance="outline" class="width-fill">
+                <mat-label class="capitalize">{{ media }}</mat-label>
+                <input type="text" [formControlName]="media" matInput />
+              </mat-form-field>
+              }
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="History"> History </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
