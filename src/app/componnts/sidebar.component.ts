@@ -47,12 +47,12 @@ interface UsersListItem {
         >
           <mat-icon>close</mat-icon>
         </button>
-
-        <div>
-          <mat-action-list role="list">
-            <mat-list-item role="listitem"> </mat-list-item>
-            <mat-list-item role="listitem">Item 2</mat-list-item>
-            <mat-list-item role="listitem">Item 3</mat-list-item>
+        <div class="mt-8">
+          <mat-action-list>
+            <mat-list-item role="listitem" class="flex items-center">
+              <mat-icon>help</mat-icon>
+              <span>Support</span>
+            </mat-list-item>
           </mat-action-list>
         </div>
       </mat-sidenav>
