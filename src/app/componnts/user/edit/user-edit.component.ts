@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, FormatWidth } from '@angular/common';
 import { Component, HostBinding, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute } from '@angular/router';
@@ -7,13 +7,13 @@ import {
   FormArray,
   FormBuilder,
   FormControl,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
-import { Role, roles } from '../../../store/user/user.reducer';
 import { Store } from '@ngrx/store';
 import {
   selectUserFullName,
@@ -27,6 +27,19 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { DndDirective } from '../../helpers/dnd.directive';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { readFile } from '../../helpers/helpers';
+import { Role, roles } from '../user.models';
+
+export interface FileData {
+  contentUrl: string;
+  name: string;
+  size: number;
+}
+
+interface CitizienShip {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-user-edit',
@@ -57,13 +70,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 })
 export class EditUserComponent {
   protected readonly routeUrl = signal<string>('');
+
   roles = new FormControl('');
   readonly rolesList = roles;
 
   readonly userRole = toSignal(this.store.select(selectUserRole));
   readonly userName = toSignal(this.store.select(selectUserFullName));
 
-  readonly citizenshipOptions: any[] = [
+  readonly citizenshipOptions: CitizienShip[] = [
     { id: 'USA', name: 'United States of America' },
     { id: 'CANADA', name: 'Canada' },
     { id: 'UK', name: 'United Kingdom' },
@@ -82,15 +96,60 @@ export class EditUserComponent {
     email: [''],
     tweeter: [''],
     facebook: [''],
+    files: this.fb.array([]),
   });
 
-  handleUserRole(role: Role) {
+  protected handleUserRole(role: Role) {
     this.store.dispatch(submitUserRole({ role }));
   }
 
-  //   fg = this.fb.group({
-  //     email: ['', []],
-  //   });
+  get getFiles(): FileData[] {
+    const files = this.linksFormGroup.get('files') as FormArray;
+    return files.controls.map((c) => c.value);
+  }
+
+  private addFileControl(fileData: FileData): void {
+    const filesArray = this.linksFormGroup.get('files') as FormArray;
+    filesArray.push(this.createFileControl(fileData));
+  }
+
+  private createFileControl(fileData: FileData): FormGroup {
+    return this.fb.group({
+      name: [fileData.name],
+      size: [fileData.size],
+      contentUrl: [fileData.contentUrl],
+    });
+  }
+
+  protected async handleFileBrowse(event: Event) {
+    const files = (event.target as HTMLInputElement).files;
+    if (files) {
+      const fileList = Object.values(files);
+      fileList.forEach(async (f) => await this.addFile(f));
+    }
+  }
+
+  protected onFileDrop(files: FileList) {
+    const fileList = Object.values(files);
+    fileList.forEach(async (f) => await this.addFile(f));
+  }
+
+  private async addFile(f: File) {
+    const file: FileData = {
+      name: f.name,
+      size: f.size,
+      contentUrl: await readFile(f),
+    };
+    this.addFileControl(file);
+  }
+
+  protected deleteFile(e: Event, index: number) {
+    e.stopPropagation();
+    const filesArray = this.linksFormGroup.get('files') as FormArray;
+    if (index >= 0 && index < filesArray.length) {
+      filesArray.removeAt(index);
+    }
+  }
 
   @HostBinding('class.h-full')
   @HostBinding('class.flex')
@@ -103,7 +162,6 @@ export class EditUserComponent {
     private fb: FormBuilder,
     private store: Store
   ) {
-    console.log(this.linksFormGroup.value);
     this.routeUrl.set(route.snapshot.url[0].path);
   }
 }

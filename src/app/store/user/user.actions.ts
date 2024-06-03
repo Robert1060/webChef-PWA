@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Role } from './user.reducer';
+import { Role } from '../../componnts/user/user.models';
 
 export const submitUserRole = createAction(
   '[User] Submit user role',

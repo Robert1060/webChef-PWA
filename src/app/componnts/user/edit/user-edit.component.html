@@ -91,11 +91,13 @@
                 <div
                   (click)="fileDropRef.click()"
                   appDnd
+                  (fileDropped)="onFileDrop($event)"
                   class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill"
                 >
                   <input
                     type="file"
                     #fileDropRef
+                    (change)="handleFileBrowse($event)"
                     id="fileDropRef"
                     multiple
                     class="hidden"
@@ -107,6 +109,21 @@
                   <p class="text-sm gray-text text-center">
                     Drag and drop filesor select from your files
                   </p>
+                  @if(getFiles; as files) { @for(file of files; track $index) {
+                  <div
+                    class="border relative flex justify-between items-center width-fill"
+                  >
+                    <span>{{ file.name }}</span>
+                    <button
+                      mat-icon-button
+                      class="scale-75"
+                      (click)="deleteFile($event, $index)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+
+                  } }
                 </div>
                 <mat-form-field appearance="outline" class="width-fill pt-4">
                   <mat-label>Select Citizenship(s)</mat-label>

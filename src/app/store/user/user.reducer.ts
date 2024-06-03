@@ -1,20 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
 import { submitUserRole } from './user.actions';
-
-export const roles = ['Performer', 'Dancer', 'Warrior', 'Admin'] as const;
-export type Role = (typeof roles)[number];
-
-export interface UserState {
-  role: Role;
-  firstName: string;
-  lastName: string;
-}
+import { UserState } from '../../componnts/user/user.models';
 
 // using it as mock data
 const initialState: UserState = {
   role: 'Performer',
   firstName: 'Janusz',
   lastName: 'Jackman',
+  birthDate: new Date(),
+  citizienShip: [],
+  files: [],
 };
 
 export const userReducer = createReducer(

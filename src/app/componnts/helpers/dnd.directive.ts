@@ -11,7 +11,7 @@ import {
   selector: '[appDnd]',
 })
 export class DndDirective {
-  @Output() fileDropped = new EventEmitter<any>();
+  @Output() fileDropped = new EventEmitter<FileList>();
 
   // Bindings to style the drag-and-drop area
   @HostBinding('style.background') private background = '#f5fcff';
@@ -42,7 +42,6 @@ export class DndDirective {
 
     const files = evt.dataTransfer?.files;
     if (files && files.length > 0) {
-      console.log(files);
       this.fileDropped.emit(files);
     }
   }
