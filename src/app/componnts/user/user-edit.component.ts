@@ -5,6 +5,27 @@ import { ActivatedRoute } from '@angular/router';
 import { DeleteBtnComponent } from '../buttons/custom-btn.component';
 import { FormBuilder } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
+import { Action } from '@ngrx/store';
+import {
+  attemptToBlockUser,
+  deleteUser,
+  setPassword,
+} from '../../store/user/user.actions';
+
+interface ActionCustomBtn {
+  type: 'action';
+  color: string;
+  name: string;
+  action: (prop: string) => Action;
+}
+interface SubmitCustomBtn {
+  type: 'submit';
+  color: string;
+  name: string;
+  formGroup: any; //maybe change later
+}
+
+type CustomBtn = ActionCustomBtn | SubmitCustomBtn;
 
 @Component({
   selector: 'app-user-edit',
@@ -18,13 +39,20 @@ import { MatTabsModule } from '@angular/material/tabs';
           <h1>Hugh Jackman</h1>
         </div>
         <div class="flex gap-4">
-          <app-custom-btn color="#E5322C" btnName="delete"></app-custom-btn>
-          <app-custom-btn color="#FABB2B" btnName="block"></app-custom-btn
-          ><app-custom-btn
-            color="#6E7C98"
-            btnName="set password"
-          ></app-custom-btn
-          ><app-custom-btn color="#5E92FC" btnName="save"></app-custom-btn>
+          @for(btn of customButtonsInternal; track $index) { @switch (btn.type)
+          { @case ('action') {
+          <app-custom-btn
+            [color]="btn.color"
+            [btnName]="btn.name"
+            [actionToDispatch]="btn.action('')"
+          ></app-custom-btn>
+          } @case ('submit') {
+          <app-custom-btn
+            [color]="btn.color"
+            [btnName]="btn.name"
+            [fg]="btn.formGroup"
+          ></app-custom-btn>
+          } } }
         </div>
       </div>
       <div class="flex w-full gap-4 mt-4" style="height: calc(100% - 80px);">
@@ -59,6 +87,33 @@ import { MatTabsModule } from '@angular/material/tabs';
 })
 export class EditUserComponent {
   protected readonly routeUrl = signal<string>('');
+
+  readonly customButtonsInternal: CustomBtn[] = [
+    {
+      type: 'action',
+      color: '#E5322C',
+      name: 'delete',
+      action: (id) => deleteUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#FABB2B',
+      name: 'block',
+      action: (id) => attemptToBlockUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#6E7C98',
+      name: 'set password',
+      action: (id) => setPassword({ id }),
+    },
+    {
+      type: 'submit',
+      color: '#5E92FC',
+      name: 'save',
+      formGroup: null as any,
+    },
+  ];
 
   //   fg = this.fb.group({
   //     email: ['', []],

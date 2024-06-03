@@ -47,6 +47,14 @@ interface UsersListItem {
         >
           <mat-icon>close</mat-icon>
         </button>
+
+        <div>
+          <mat-action-list role="list">
+            <mat-list-item role="listitem"> </mat-list-item>
+            <mat-list-item role="listitem">Item 2</mat-list-item>
+            <mat-list-item role="listitem">Item 3</mat-list-item>
+          </mat-action-list>
+        </div>
       </mat-sidenav>
       <mat-sidenav-content>
         <div class="flex flex-col h-screen">
