@@ -15,6 +15,23 @@ body {
   color: #c0c0c0;
 }
 
-.active-link span {
+.active-link {
   @apply font-medium;
+}
+
+.text-purple {
+  color: #325395;
+}
+
+.text-blue {
+  color: #5e92fc;
+}
+
+.width-fill {
+  width: -webkit-fill-available;
+}
+
+//tailwind adds weird border line in outlined form field
+div.mdc-notched-outline__notch {
+  border-right-style: revert;
 }

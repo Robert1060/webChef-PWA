@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { UserListComponent } from './user-list.component';
-import { EditUserComponent } from './user-edit.component';
+import { EditUserComponent } from './edit/user-edit.component';
 import { UserRolesComponent } from './user-roles.component';
 import { UserSettingsComponent } from './user-settings.component';
 
@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'edit', component: EditUserComponent },
   { path: 'roles', component: UserRolesComponent },
   { path: 'settings', component: UserSettingsComponent },
-  { path: '**', redirectTo: 'list' },
+  { path: '**', redirectTo: 'edit' },
 ];
 
 @NgModule({

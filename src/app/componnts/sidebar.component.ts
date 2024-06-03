@@ -82,7 +82,7 @@ interface UsersListItem {
                       <span>Statistics</span>
                     </mat-panel-title>
                   </mat-expansion-panel-header>
-                  statistic info here
+                  statistic routes here
                 </mat-expansion-panel>
                 <mat-expansion-panel hideToggle>
                   <mat-expansion-panel-header>
@@ -97,6 +97,7 @@ interface UsersListItem {
                       <button
                         class="flex items-center"
                         [routerLink]="['/user', item.url]"
+                        routerLinkActive="active-link"
                       >
                         <mat-icon class="mr-2">{{ item.icon }}</mat-icon>
                         <span>{{ item.title }}</span>
