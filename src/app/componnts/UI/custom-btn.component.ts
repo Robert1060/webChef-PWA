@@ -38,7 +38,6 @@ export class DeleteBtnComponent {
   protected submitForm() {
     const form = this.fg();
     if (form?.valid && this.isUserState(form.value)) {
-      console.log(form.value);
       this.store.dispatch(submtiEditUserState(form.value));
     } else {
       form?.markAllAsTouched();
