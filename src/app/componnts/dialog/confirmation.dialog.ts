@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 
 interface ResultButton {
   text: string;
-  result: any;
+  result: boolean;
 }
 
 export interface DialogData {
