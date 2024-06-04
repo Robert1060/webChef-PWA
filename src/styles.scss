@@ -35,3 +35,26 @@ body {
 div.mdc-notched-outline__notch {
   border-right-style: revert;
 }
+
+.custom-btn {
+  color: white;
+  border-radius: 6px;
+  text-transform: uppercase;
+  transition: ease-in-out 0.3s;
+}
+.custom-btn:hover {
+  opacity: 0.6;
+}
+
+.btn-gray {
+  background-color: #dbdde0;
+}
+.btn-blue {
+  background-color: #7ea8fd;
+}
+.btn-green {
+  background-color: #00a1a1;
+}
+.btn-red {
+  background-color: #d92f2a;
+}

@@ -9,10 +9,19 @@ export interface CitizienShip {
   name: string;
 }
 
+export interface Permission {
+  title: string;
+  create: boolean;
+  read: boolean;
+  update: boolean;
+  delete: boolean;
+}
+
 export const roles = ['Performer', 'Dancer', 'Warrior', 'Admin'] as const;
 export type Role = (typeof roles)[number];
 
 export interface EditUserState {
+  role: Role;
   firstName: string;
   lastName: string;
   birthDate: string;
@@ -21,10 +30,10 @@ export interface EditUserState {
   email?: string;
   instagram?: string;
   tweeter?: string;
+  permissions?: Permission[];
 }
 
 export interface UserState {
   id: string;
-  role: Role;
   editUser?: EditUserState;
 }
