@@ -16,10 +16,12 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
 import { Action, Store } from '@ngrx/store';
 import {
+  selectUserEditState,
   selectUserFullName,
+  selectUserId,
   selectUserRole,
 } from '../../../store/user/user.selectors';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   attemptToBlockUser,
   deleteUser,
@@ -32,8 +34,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { DndDirective } from '../../helpers/dnd.directive';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { readFile } from '../../helpers/helpers';
+import { notNull, readFile } from '../../helpers/helpers';
 import { CitizienShip, FileData, Role, roles } from '../user.models';
+
+import { filter } from 'rxjs';
 
 interface ActionCustomBtn {
   type: 'action';
@@ -84,6 +88,8 @@ export class EditUserComponent {
 
   readonly userRole = toSignal(this.store.select(selectUserRole));
   readonly userName = toSignal(this.store.select(selectUserFullName));
+  // readonly userState$ =
+  readonly userId = toSignal(this.store.select(selectUserId));
 
   readonly citizenshipOptions: CitizienShip[] = [
     { id: 'USA', name: 'United States of America' },
@@ -125,7 +131,7 @@ export class EditUserComponent {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     birthDate: ['', Validators.required],
-    citizienShip: ['', Validators.required],
+    citizienShip: [[''], Validators.required],
     instagram: [''],
     email: [''],
     tweeter: [''],
@@ -197,5 +203,14 @@ export class EditUserComponent {
     private store: Store
   ) {
     this.routeUrl.set(route.snapshot.url[0].path);
+    // patch form fields
+    this.store
+      .select(selectUserEditState)
+      .pipe(filter(notNull), takeUntilDestroyed())
+      .subscribe((state) => {
+        this.linksFormGroup.patchValue({
+          ...state,
+        });
+      });
   }
 }

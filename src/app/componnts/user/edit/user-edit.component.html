@@ -5,14 +5,19 @@
       <h1 class="text-purple">{{ userName() }}</h1>
     </div>
     <div class="flex gap-4">
-      @for(btn of customButtonsInternal; track $index) { @switch (btn.type) {
+      @for(btn of customButtonsInternal; track $index) {
+      <!--  -->
+      @switch (btn.type) {
+      <!--  -->
       @case ('action') {
       <app-custom-btn
         [color]="btn.color"
         [btnName]="btn.name"
-        [actionToDispatch]="btn.action('')"
+        [actionToDispatch]="btn.action(userId()!)"
       ></app-custom-btn>
-      } @case ('submit') {
+      }
+      <!--  -->
+      @case ('submit') {
       <app-custom-btn
         [color]="btn.color"
         [btnName]="btn.name"
@@ -98,7 +103,7 @@
                   (click)="fileDropRef.click()"
                   appDnd
                   (fileDropped)="onFileDrop($event)"
-                  class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill"
+                  class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill rounded-lg"
                 >
                   <input
                     type="file"
@@ -149,7 +154,7 @@
           <div>
             <h1 class="text-purple">Contact information</h1>
             <mat-divider></mat-divider>
-            <div class="gap-2">
+            <div class="mt-4 grid grid-cols-2 gap-x-4">
               @for(media of socialMedia; track $index) {
               <mat-form-field appearance="outline" class="width-fill">
                 <mat-label class="capitalize">{{ media }}</mat-label>

@@ -13,3 +13,7 @@ export async function readFile(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+export function notNull<T>(el: T | null | undefined): el is T {
+  return el != null;
+}

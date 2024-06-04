@@ -12,6 +12,7 @@ import {
   DialogData,
 } from '../../componnts/dialog/confirmation.dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { notNull } from '../../componnts/helpers/helpers';
 
 @Injectable()
 export class UserEffects {
@@ -75,8 +76,4 @@ export class UserEffects {
       ),
     { dispatch: false }
   );
-}
-
-export function notNull<T>(el: T | null | undefined): el is T {
-  return el != null;
 }

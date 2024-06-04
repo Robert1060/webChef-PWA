@@ -15,7 +15,7 @@ export type Role = (typeof roles)[number];
 export interface EditUserState {
   firstName: string;
   lastName: string;
-  birthDate: Date;
+  birthDate: string;
   citizienShip: string[];
   files: FileData[];
   email?: string;
@@ -24,10 +24,7 @@ export interface EditUserState {
 }
 
 export interface UserState {
-  role: Role;
-  editUser: EditUserState;
-}
-
-export interface User extends EditUserState {
   id: string;
+  role: Role;
+  editUser?: EditUserState;
 }

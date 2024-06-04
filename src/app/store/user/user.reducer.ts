@@ -4,10 +4,11 @@ import { UserState } from '../../componnts/user/user.models';
 
 // using it as mock data
 const initialState: UserState = {
+  id: 'foo',
   editUser: {
-    firstName: 'Janusz',
-    lastName: 'Jackman',
-    birthDate: new Date(),
+    firstName: 'Bogdan',
+    lastName: 'Boner',
+    birthDate: '',
     citizienShip: [],
     files: [],
   },
@@ -26,7 +27,7 @@ export const userReducer = createReducer(
     return {
       ...state,
       editUser: {
-        ...state,
+        ...state.editUser,
         ...action,
       },
     };

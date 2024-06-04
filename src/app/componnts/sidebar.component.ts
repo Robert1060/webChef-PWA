@@ -119,7 +119,7 @@ interface UsersListItem {
             }
             <div class="flex w-full flex-col">
               <app-navbar></app-navbar>
-              <div class="flex-grow">
+              <div class="flex-grow" style="max-height: calc(100% - 80px)">
                 <router-outlet></router-outlet>
               </div>
             </div>
