@@ -1,15 +1,18 @@
 import { createReducer, on } from '@ngrx/store';
-import { submitUserRole } from './user.actions';
+import { submitUserRole, submtiEditUserState } from './user.actions';
 import { UserState } from '../../componnts/user/user.models';
 
 // using it as mock data
 const initialState: UserState = {
+  id: 'foo',
+  editUser: {
+    firstName: 'Bogdan',
+    lastName: 'Boner',
+    birthDate: '',
+    citizienShip: [],
+    files: [],
+  },
   role: 'Performer',
-  firstName: 'Janusz',
-  lastName: 'Jackman',
-  birthDate: new Date(),
-  citizienShip: [],
-  files: [],
 };
 
 export const userReducer = createReducer(
@@ -18,6 +21,15 @@ export const userReducer = createReducer(
     return {
       ...state,
       role: action.role,
+    };
+  }),
+  on(submtiEditUserState, (state, action) => {
+    return {
+      ...state,
+      editUser: {
+        ...state.editUser,
+        ...action,
+      },
     };
   })
 );

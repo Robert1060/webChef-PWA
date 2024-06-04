@@ -1,7 +1,8 @@
 import { Component, HostBinding, input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { Action } from '@ngrx/store';
+import { AbstractControl, FormGroup } from '@angular/forms';
+import { Action, Store } from '@ngrx/store';
+import { EditUserState } from '../user/user.models';
+import { submtiEditUserState } from '../../store/user/user.actions';
 
 @Component({
   selector: 'app-custom-btn',
@@ -17,29 +18,40 @@ import { Action } from '@ngrx/store';
   template: `
     <button
       class="p-3 rounded-md uppercase"
-      (click)="actionToDispach() ? action() : submit()"
+      (click)="
+        actionToDispatch() ? dispatchAction(actionToDispatch()) : submit()
+      "
     >
       {{ btnName() }}
     </button>
   `,
 })
 export class DeleteBtnComponent {
+  constructor(private store: Store) {}
+
   color = input.required<string>();
   btnName = input.required<string>();
-  actionToDispach = input<Action>();
 
+  actionToDispatch = input<Action>();
   fg = input<FormGroup>();
 
   submit() {
     const form = this.fg();
-    if (form?.valid) {
-      console.log(this.fg()?.value);
+    if (form?.valid && this.isUserState(form.value)) {
+      this.store.dispatch(submtiEditUserState(form.value));
     } else {
       form?.markAllAsTouched();
     }
   }
 
-  action() {}
+  isUserState(data: any): data is EditUserState {
+    // that's just ugly type check, to chage in future
+    return data.firstName && data.lastName;
+  }
+
+  dispatchAction(action?: Action) {
+    if (action) this.store.dispatch(action);
+  }
 
   @HostBinding('style.--button-color')
   get buttonColor(): string {

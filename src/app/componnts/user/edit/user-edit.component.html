@@ -5,14 +5,25 @@
       <h1 class="text-purple">{{ userName() }}</h1>
     </div>
     <div class="flex gap-4">
-      <app-custom-btn color="#E5322C" btnName="delete"></app-custom-btn>
-      <app-custom-btn color="#FABB2B" btnName="block"></app-custom-btn
-      ><app-custom-btn color="#6E7C98" btnName="set password"></app-custom-btn
-      ><app-custom-btn
-        color="#5E92FC"
-        btnName="save"
+      @for(btn of customButtonsInternal; track $index) {
+      <!--  -->
+      @switch (btn.type) {
+      <!--  -->
+      @case ('action') {
+      <app-custom-btn
+        [color]="btn.color"
+        [btnName]="btn.name"
+        [actionToDispatch]="btn.action(userId()!)"
+      ></app-custom-btn>
+      }
+      <!--  -->
+      @case ('submit') {
+      <app-custom-btn
+        [color]="btn.color"
+        [btnName]="btn.name"
         [fg]="linksFormGroup"
       ></app-custom-btn>
+      } } }
     </div>
   </div>
   <div class="flex w-full gap-4 mt-4" style="height: calc(100% - 80px)">
@@ -92,7 +103,7 @@
                   (click)="fileDropRef.click()"
                   appDnd
                   (fileDropped)="onFileDrop($event)"
-                  class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill"
+                  class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill rounded-lg"
                 >
                   <input
                     type="file"
@@ -109,7 +120,8 @@
                   <p class="text-sm gray-text text-center">
                     Drag and drop filesor select from your files
                   </p>
-                  @if(getFiles; as files) { @for(file of files; track $index) {
+                  @if(getFilesControls; as files) { @for(file of files; track
+                  $index) {
                   <div
                     class="border relative flex justify-between items-center width-fill"
                   >
@@ -142,7 +154,7 @@
           <div>
             <h1 class="text-purple">Contact information</h1>
             <mat-divider></mat-divider>
-            <div class="gap-2">
+            <div class="mt-4 grid grid-cols-2 gap-x-4">
               @for(media of socialMedia; track $index) {
               <mat-form-field appearance="outline" class="width-fill">
                 <mat-label class="capitalize">{{ media }}</mat-label>

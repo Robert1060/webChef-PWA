@@ -14,32 +14,44 @@ import {
 } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import {
+  selectUserEditState,
   selectUserFullName,
+  selectUserId,
   selectUserRole,
 } from '../../../store/user/user.selectors';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { submitUserRole } from '../../../store/user/user.actions';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import {
+  attemptToBlockUser,
+  deleteUser,
+  setPassword,
+  submitUserRole,
+} from '../../../store/user/user.actions';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { DndDirective } from '../../helpers/dnd.directive';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { readFile } from '../../helpers/helpers';
-import { Role, roles } from '../user.models';
+import { notNull, readFile } from '../../helpers/helpers';
+import { CitizienShip, FileData, Role, roles } from '../user.models';
 
-export interface FileData {
-  contentUrl: string;
+import { filter } from 'rxjs';
+
+interface ActionCustomBtn {
+  type: 'action';
+  color: string;
   name: string;
-  size: number;
+  action: (prop: string) => Action;
+}
+interface SubmitCustomBtn {
+  type: 'submit';
+  color: string;
+  name: string;
 }
 
-interface CitizienShip {
-  id: string;
-  name: string;
-}
+type CustomBtn = ActionCustomBtn | SubmitCustomBtn;
 
 @Component({
   selector: 'app-user-edit',
@@ -76,6 +88,8 @@ export class EditUserComponent {
 
   readonly userRole = toSignal(this.store.select(selectUserRole));
   readonly userName = toSignal(this.store.select(selectUserFullName));
+  // readonly userState$ =
+  readonly userId = toSignal(this.store.select(selectUserId));
 
   readonly citizenshipOptions: CitizienShip[] = [
     { id: 'USA', name: 'United States of America' },
@@ -85,13 +99,39 @@ export class EditUserComponent {
     { id: 'INDIA', name: 'India' },
   ];
 
+  readonly customButtonsInternal: CustomBtn[] = [
+    {
+      type: 'action',
+      color: '#E5322C',
+      name: 'delete',
+      action: (id) => deleteUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#FABB2B',
+      name: 'block',
+      action: (id) => attemptToBlockUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#6E7C98',
+      name: 'set password',
+      action: (id) => setPassword({ id }),
+    },
+    {
+      type: 'submit',
+      color: '#5E92FC',
+      name: 'save',
+    },
+  ];
+
   readonly socialMedia = ['instagram', 'email', 'tweeter', 'facebook'];
 
   public linksFormGroup = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     birthDate: ['', Validators.required],
-    citizienShip: ['', Validators.required],
+    citizienShip: [[''], Validators.required],
     instagram: [''],
     email: [''],
     tweeter: [''],
@@ -103,7 +143,7 @@ export class EditUserComponent {
     this.store.dispatch(submitUserRole({ role }));
   }
 
-  get getFiles(): FileData[] {
+  get getFilesControls(): FileData[] {
     const files = this.linksFormGroup.get('files') as FormArray;
     return files.controls.map((c) => c.value);
   }
@@ -163,5 +203,14 @@ export class EditUserComponent {
     private store: Store
   ) {
     this.routeUrl.set(route.snapshot.url[0].path);
+    // patch form fields
+    this.store
+      .select(selectUserEditState)
+      .pipe(filter(notNull), takeUntilDestroyed())
+      .subscribe((state) => {
+        this.linksFormGroup.patchValue({
+          ...state,
+        });
+      });
   }
 }

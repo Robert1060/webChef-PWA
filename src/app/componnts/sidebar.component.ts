@@ -47,6 +47,14 @@ interface UsersListItem {
         >
           <mat-icon>close</mat-icon>
         </button>
+        <div class="mt-8">
+          <mat-action-list>
+            <mat-list-item role="listitem" class="flex items-center">
+              <mat-icon>help</mat-icon>
+              <span>Support</span>
+            </mat-list-item>
+          </mat-action-list>
+        </div>
       </mat-sidenav>
       <mat-sidenav-content>
         <div class="flex flex-col h-screen">
@@ -111,7 +119,7 @@ interface UsersListItem {
             }
             <div class="flex w-full flex-col">
               <app-navbar></app-navbar>
-              <div class="flex-grow">
+              <div class="flex-grow" style="max-height: calc(100% - 80px)">
                 <router-outlet></router-outlet>
               </div>
             </div>
