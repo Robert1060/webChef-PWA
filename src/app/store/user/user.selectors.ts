@@ -7,7 +7,10 @@ export const selectUserEditState = createSelector(
   userState,
   (state) => state.editUser
 );
-export const selectUserRole = createSelector(userState, (state) => state.role);
+export const selectUserRole = createSelector(
+  selectUserEditState,
+  (state) => state?.role
+);
 
 export const selectUserFullName = createSelector(
   selectUserEditState,

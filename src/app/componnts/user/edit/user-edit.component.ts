@@ -1,4 +1,4 @@
-import { CommonModule, FormatWidth } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, HostBinding, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute } from '@angular/router';
@@ -6,7 +6,6 @@ import { DeleteBtnComponent } from '../../UI/custom-btn.component';
 import {
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -35,8 +34,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { DndDirective } from '../../helpers/dnd.directive';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { notNull, readFile } from '../../helpers/helpers';
-import { CitizienShip, FileData, Role, roles } from '../user.models';
-
+import {
+  CitizienShip,
+  FileData,
+  Permission,
+  Role,
+  roles,
+} from '../user.models';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { filter } from 'rxjs';
 
 interface ActionCustomBtn {
@@ -70,6 +75,7 @@ type CustomBtn = ActionCustomBtn | SubmitCustomBtn;
     MatIconModule,
     DndDirective,
     MatCheckboxModule,
+    MatExpansionModule,
   ],
   templateUrl: './user-edit.component.html',
   styles: [
@@ -83,51 +89,21 @@ type CustomBtn = ActionCustomBtn | SubmitCustomBtn;
 export class EditUserComponent {
   protected readonly routeUrl = signal<string>('');
 
-  roles = new FormControl('');
   readonly rolesList = roles;
 
   readonly userRole = toSignal(this.store.select(selectUserRole));
   readonly userName = toSignal(this.store.select(selectUserFullName));
-  // readonly userState$ =
   readonly userId = toSignal(this.store.select(selectUserId));
 
-  readonly citizenshipOptions: CitizienShip[] = [
-    { id: 'USA', name: 'United States of America' },
-    { id: 'CANADA', name: 'Canada' },
-    { id: 'UK', name: 'United Kingdom' },
-    { id: 'AUSTRALIA', name: 'Australia' },
-    { id: 'INDIA', name: 'India' },
-  ];
+  readonly citizenshipOptions = EditUserHelper.citizenshipOptions;
 
-  readonly customButtonsInternal: CustomBtn[] = [
-    {
-      type: 'action',
-      color: '#E5322C',
-      name: 'delete',
-      action: (id) => deleteUser({ id }),
-    },
-    {
-      type: 'action',
-      color: '#FABB2B',
-      name: 'block',
-      action: (id) => attemptToBlockUser({ id }),
-    },
-    {
-      type: 'action',
-      color: '#6E7C98',
-      name: 'set password',
-      action: (id) => setPassword({ id }),
-    },
-    {
-      type: 'submit',
-      color: '#5E92FC',
-      name: 'save',
-    },
-  ];
+  readonly customButtonsInternal = EditUserHelper.customButtonsInternal;
 
-  readonly socialMedia = ['instagram', 'email', 'tweeter', 'facebook'];
+  socialMedia = EditUserHelper.socialMedia;
+  private readonly permissionItems = EditUserHelper.permissionItems;
 
-  public linksFormGroup = this.fb.group({
+  public userFormGroup = this.fb.group({
+    role: ['', Validators.required],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     birthDate: ['', Validators.required],
@@ -136,20 +112,36 @@ export class EditUserComponent {
     email: [''],
     tweeter: [''],
     facebook: [''],
-    files: this.fb.array([]),
+    files: this.fb.array<FileData>([]),
+    permissions: this.fb.array(
+      this.permissionItems.map((p) => {
+        return this.fb.group({
+          title: [p],
+          create: [false],
+          read: [false],
+          update: [false],
+          delete: [false],
+        });
+      })
+    ),
   });
 
   protected handleUserRole(role: Role) {
     this.store.dispatch(submitUserRole({ role }));
   }
 
-  get getFilesControls(): FileData[] {
-    const files = this.linksFormGroup.get('files') as FormArray;
+  get permissions(): Permission[] {
+    const permissions = this.userFormGroup.get('permissions') as FormArray;
+    return permissions.controls.map((c) => c.value);
+  }
+
+  get filesControls(): FileData[] {
+    const files = this.userFormGroup.get('files') as FormArray;
     return files.controls.map((c) => c.value);
   }
 
   private addFileControl(fileData: FileData): void {
-    const filesArray = this.linksFormGroup.get('files') as FormArray;
+    const filesArray = this.userFormGroup.get('files') as FormArray;
     filesArray.push(this.createFileControl(fileData));
   }
 
@@ -185,7 +177,7 @@ export class EditUserComponent {
 
   protected deleteFile(e: Event, index: number) {
     e.stopPropagation();
-    const filesArray = this.linksFormGroup.get('files') as FormArray;
+    const filesArray = this.userFormGroup.get('files') as FormArray;
     if (index >= 0 && index < filesArray.length) {
       filesArray.removeAt(index);
     }
@@ -203,14 +195,53 @@ export class EditUserComponent {
     private store: Store
   ) {
     this.routeUrl.set(route.snapshot.url[0].path);
-    // patch form fields
+    // patch form fields after rerouting
     this.store
       .select(selectUserEditState)
       .pipe(filter(notNull), takeUntilDestroyed())
       .subscribe((state) => {
-        this.linksFormGroup.patchValue({
+        this.userFormGroup.patchValue({
           ...state,
         });
       });
   }
+}
+
+class EditUserHelper {
+  static readonly citizenshipOptions: CitizienShip[] = [
+    { id: 'USA', name: 'United States of America' },
+    { id: 'CANADA', name: 'Canada' },
+    { id: 'UK', name: 'United Kingdom' },
+    { id: 'AUSTRALIA', name: 'Australia' },
+    { id: 'INDIA', name: 'India' },
+  ];
+
+  static readonly customButtonsInternal: CustomBtn[] = [
+    {
+      type: 'action',
+      color: '#E5322C',
+      name: 'delete',
+      action: (id) => deleteUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#FABB2B',
+      name: 'block',
+      action: (id) => attemptToBlockUser({ id }),
+    },
+    {
+      type: 'action',
+      color: '#6E7C98',
+      name: 'set password',
+      action: (id) => setPassword({ id }),
+    },
+    {
+      type: 'submit',
+      color: '#5E92FC',
+      name: 'save',
+    },
+  ];
+
+  static socialMedia = ['instagram', 'email', 'tweeter', 'facebook'] as const;
+  static permissionItems = ['Script', 'Props', 'Screens', 'Money', 'Stunt'];
 }

@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { UserListComponent } from './user-list.component';
+import { UserListComponent } from './list/user-list.component';
 import { EditUserComponent } from './edit/user-edit.component';
-import { UserRolesComponent } from './user-roles.component';
-import { UserSettingsComponent } from './user-settings.component';
+import { UserRolesComponent } from './roles/user-roles.component';
+import { UserSettingsComponent } from './settings/user-settings.component';
 
 const routes: Routes = [
   { path: 'list', component: UserListComponent },

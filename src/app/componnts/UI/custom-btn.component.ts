@@ -1,5 +1,5 @@
 import { Component, HostBinding, input } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Action, Store } from '@ngrx/store';
 import { EditUserState } from '../user/user.models';
 import { submtiEditUserState } from '../../store/user/user.actions';
@@ -17,9 +17,9 @@ import { submtiEditUserState } from '../../store/user/user.actions';
   ],
   template: `
     <button
-      class="p-3 rounded-md uppercase"
+      class="p-3 custom-btn"
       (click)="
-        actionToDispatch() ? dispatchAction(actionToDispatch()) : submit()
+        actionToDispatch() ? dispatchAction(actionToDispatch()) : submitForm()
       "
     >
       {{ btnName() }}
@@ -35,7 +35,7 @@ export class DeleteBtnComponent {
   actionToDispatch = input<Action>();
   fg = input<FormGroup>();
 
-  submit() {
+  protected submitForm() {
     const form = this.fg();
     if (form?.valid && this.isUserState(form.value)) {
       this.store.dispatch(submtiEditUserState(form.value));
@@ -44,12 +44,12 @@ export class DeleteBtnComponent {
     }
   }
 
-  isUserState(data: any): data is EditUserState {
+  private isUserState(data: any): data is EditUserState {
     // that's just ugly type check, to chage in future
     return data.firstName && data.lastName;
   }
 
-  dispatchAction(action?: Action) {
+  protected dispatchAction(action?: Action) {
     if (action) this.store.dispatch(action);
   }
 

@@ -1,6 +1,6 @@
 <div class="m-4 p-4 w-full">
-  <div class="flex justify-between items-center">
-    <div class="flex flex-col gap-2">
+  <div class="flex justify-between items-center max-lg:flex-col">
+    <div class="flex flex-col gap-2 max-lg:items-center">
       <div class="capitalize">user / {{ routeUrl() }}</div>
       <h1 class="text-purple">{{ userName() }}</h1>
     </div>
@@ -21,33 +21,34 @@
       <app-custom-btn
         [color]="btn.color"
         [btnName]="btn.name"
-        [fg]="linksFormGroup"
+        [fg]="userFormGroup"
       ></app-custom-btn>
       } } }
     </div>
   </div>
-  <div class="flex w-full gap-4 mt-4" style="height: calc(100% - 80px)">
+  <div
+    class="flex w-full gap-4 mt-4 max-lg:flex-col"
+    style="height: calc(100% - 80px)"
+    [formGroup]="userFormGroup"
+  >
     <mat-tab-group
-      class="w-3/5 border"
+      class="w-3/5 border max-lg:w-fit"
       mat-stretch-tabs="false"
       mat-align-tabs="start"
     >
       <mat-tab label="Permissions">
-        <div class="flex justify-between p-6">
+        <div class="flex justify-between p-4">
           <div>
             <h1>
               Role: <span class="text-blue">{{ userRole() }}</span>
             </h1>
           </div>
           <div>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="width-fill">
               <mat-label>Assign role</mat-label>
-              <mat-select
-                (ngModelChange)="handleUserRole($event)"
-                [ngModel]="userRole()"
-              >
+              <mat-select formControlName="role">
                 <mat-select-trigger>
-                  {{ userRole() || "" }}
+                  {{ userFormGroup.get("role")?.value }}
                 </mat-select-trigger>
                 @for (role of rolesList; track $index) {
                 <mat-option [value]="role">{{ role }}</mat-option>
@@ -56,18 +57,57 @@
             </mat-form-field>
           </div>
         </div>
+        <div class="mx-4">
+          <div class="grid grid-cols-2 font-medium text-base">
+            <span class="p-3">Object</span>
+            <span class="p-3">Action</span>
+          </div>
+          <mat-divider></mat-divider>
+          @for(permission of permissions; track $index) {
+          <div class="grid grid-cols-2 items-center">
+            <span class="m-3 font-medium">{{ permission.title }}</span>
+            <div class="m-3 flex gap-3">
+              <button
+                class="custom-btn bg-gray p-1 px-2"
+                (click)="permission.create = !permission.create"
+              >
+                Create
+              </button>
+              <button
+                class="custom-btn bg-blue p-1 px-2"
+                (click)="permission.read = !permission.read"
+              >
+                Read
+              </button>
+              <button
+                class="custom-btn bg-green p-1 px-2"
+                (click)="permission.update = !permission.update"
+              >
+                Update
+              </button>
+              <button
+                class="custom-btn bg-red p-1 px-2"
+                (click)="permission.delete = !permission.delete"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          }
+        </div>
       </mat-tab>
       <mat-tab label="Logs">
         <div class="p-4">logs content goes here</div>
       </mat-tab>
     </mat-tab-group>
     <mat-tab-group
-      class="w-2/5 border"
+      class="w-2/5 border max-lg:w-fit"
       mat-stretch-tabs="false"
       mat-align-tabs="start"
     >
       <mat-tab label="Links">
-        <div [formGroup]="linksFormGroup" class="flex flex-col p-6">
+        <div class="flex flex-col p-6">
           <div>
             <h1 class="text-purple">Links</h1>
             <mat-divider></mat-divider>
@@ -106,12 +146,12 @@
                   class="border-2 border-blue-300 border-dashed p-2 flex flex-col justify-center items-center width-fill rounded-lg"
                 >
                   <input
+                    hidden
                     type="file"
                     #fileDropRef
                     (change)="handleFileBrowse($event)"
                     id="fileDropRef"
                     multiple
-                    class="hidden"
                   />
                   <mat-icon color="primary">upload</mat-icon>
                   <label class="rounded-lg text-blue"
@@ -120,7 +160,7 @@
                   <p class="text-sm gray-text text-center">
                     Drag and drop filesor select from your files
                   </p>
-                  @if(getFilesControls; as files) { @for(file of files; track
+                  @if(filesControls; as files) { @for(file of files; track
                   $index) {
                   <div
                     class="border relative flex justify-between items-center width-fill"

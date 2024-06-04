@@ -6,13 +6,13 @@ import { UserState } from '../../componnts/user/user.models';
 const initialState: UserState = {
   id: 'foo',
   editUser: {
+    role: 'Performer',
     firstName: 'Bogdan',
     lastName: 'Boner',
     birthDate: '',
     citizienShip: [],
     files: [],
   },
-  role: 'Performer',
 };
 
 export const userReducer = createReducer(
